@@ -18,6 +18,9 @@
 
 __author__ = "tian"
 
+from flask import Flask, jsonify
+import knitlib
+
 app = Flask(__name__)
 
 
@@ -26,5 +29,16 @@ def hello_world():
     return 'Hello World!'
 
 
+@app.route('/v1/get_machine_plugins')
+def get_machine_plugins():
+    return jsonify(knitlib.machine_handler.get_active_machine_plugins_names())
+
+
+@app.route('/v1/get_ports')
+def get_ports():
+    port_dict = dict([(p[0], p[1]) for p in knitlib.machine_handler.get_available_ports()])
+    return jsonify(port_dict)
+
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
