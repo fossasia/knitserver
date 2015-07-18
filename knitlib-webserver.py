@@ -15,13 +15,14 @@
 #    along with Knitlib.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2015 Sebastian Oliva <http://github.com/fashiontec/knitlib>
-
 __author__ = "tian"
 
 from flask import Flask, jsonify
 import knitlib
 
 app = Flask(__name__)
+# A reference for creating new RESTful endpoints:
+# http://blog.luisrei.com/articles/flaskrest.html
 
 
 @app.route('/')
