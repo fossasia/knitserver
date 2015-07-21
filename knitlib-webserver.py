@@ -41,6 +41,11 @@ def get_ports():
     return jsonify(port_dict)
 
 
+@app.route('/v1/get_job_status/<job_id>')
+def get_ports(job_id):
+    pass
+
+
 def create_knitting_job(port, plugin):
     """Creates a knitting job and inits the Machine plugin returning the job id."""
     pass
