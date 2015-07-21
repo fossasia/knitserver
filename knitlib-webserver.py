@@ -41,5 +41,23 @@ def get_ports():
     return jsonify(port_dict)
 
 
+def create_knitting_job(port, plugin):
+    """Creates a knitting job and inits the Machine plugin returning the job id."""
+    pass
+
+
+@app.route('/v1/configure_job/<job_id>', methods=["POST"])
+def configure_knitting_job(job_id, knitpat_dict):
+    """Configures job based on Knitpat file."""
+    knitlib.knitpat.validate_dict(knitpat_dict)
+    pass
+
+
+@app.route('/v1/knit_job/<job_id>', methods=["POST"])
+def knit_job(job_id):
+    """Starts the knitting process for Job ID."""
+    pass
+
+
 if __name__ == '__main__':
     app.run(debug=True)
