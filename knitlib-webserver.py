@@ -19,10 +19,14 @@ __author__ = "tian"
 
 from flask import Flask, jsonify
 import knitlib
+from knitlib.knitting_job import KnittingJob
 
 app = Flask(__name__)
 # A reference for creating new RESTful endpoints:
 # http://blog.luisrei.com/articles/flaskrest.html
+
+
+job_dict = {}
 
 
 @app.route('/')
@@ -46,9 +50,13 @@ def get_ports(job_id):
     pass
 
 
-def create_knitting_job(port, plugin):
+def create_knitting_job(plugin_id, port):
     """Creates a knitting job and inits the Machine plugin returning the job id."""
-    pass
+    plugin_class = knitlib.machine_handler.get_machine_plugin_by_id(plugin_id)
+    job = KnittingJob(plugin_class, port)
+    job_string_id = str(job.id)
+    job_dict[job_string_id] = job
+    return job_string_id
 
 
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
