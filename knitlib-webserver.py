@@ -50,13 +50,14 @@ def get_ports(job_id):
     pass
 
 
+@app.route('/v1/create_job/', methods=["POST"])
 def create_knitting_job(plugin_id, port):
     """Creates a knitting job and inits the Machine plugin returning the job id."""
     plugin_class = knitlib.machine_handler.get_machine_plugin_by_id(plugin_id)
     job = KnittingJob(plugin_class, port)
     job_string_id = str(job.id)
     job_dict[job_string_id] = job
-    return job_string_id
+    return jsonify({"job_id": job_string_id})
 
 
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
