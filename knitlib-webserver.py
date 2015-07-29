@@ -40,7 +40,7 @@ def hello_world():
 
 @app.route('/v1/get_machine_plugins')
 def get_machine_plugins():
-    return jsonify(knitlib.machine_handler.get_active_machine_plugins_names())
+    return jsonify({"active_plugins": knitlib.machine_handler.get_active_machine_plugins_names()})
 
 
 @app.route('/v1/get_ports')
