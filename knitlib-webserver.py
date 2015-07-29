@@ -18,10 +18,14 @@
 __author__ = "tian"
 
 from flask import Flask, jsonify
+from flask.ext.socketio import SocketIO, emit
+
 import knitlib
 from knitlib.knitting_job import KnittingJob
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret'
+socketio = SocketIO(app)
 # A reference for creating new RESTful endpoints:
 # http://blog.luisrei.com/articles/flaskrest.html
 
@@ -73,5 +77,8 @@ def knit_job(job_id):
     pass
 
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.debug = False
+    socketio.run(app)
