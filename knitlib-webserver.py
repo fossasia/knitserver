@@ -77,6 +77,14 @@ def knit_job(job_id):
     pass
 
 
+@socketio.on('get_progress', namespace='/v1/knitting_socket')
+def emit_progress(message):
+    emit('progress', {'data': message['data']})
+
+
+def emit_message_dict():
+    pass
+
 
 if __name__ == '__main__':
     # app.run(debug=True)
