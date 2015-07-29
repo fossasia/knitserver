@@ -50,7 +50,7 @@ def get_ports():
 
 
 @app.route('/v1/get_job_status/<job_id>')
-def get_ports(job_id):
+def get_job_status(job_id):
     pass
 
 
