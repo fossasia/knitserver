@@ -70,6 +70,14 @@ def create_knitting_job():
     return jsonify({"job_id": job_string_id})
 
 
+# FIXME
+@app.route('/v1/init_job/<job_id>', methods=["POST"])
+def init_job(job_id):
+    job = job_dict.get(job_id)
+    job.init_job()
+    return get_job_status(job_id)
+
+
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
 def configure_knitting_job(job_id):
     """Configures job based on Knitpat file."""
@@ -80,13 +88,18 @@ def configure_knitting_job(job_id):
     return get_job_status(job_id)
 
 
+# FIXME
 @app.route('/v1/knit_job/<job_id>', methods=["POST"])
 def knit_job(job_id):
     """Starts the knitting process for Job ID."""
-    job = job_dict.get(job_id)
-    gr = greenlet(job.knit_job)
-    gr.switch()
-    return str(job)
+    try:
+        job = job_dict.get(job_id)
+        gr = greenlet(job.knit_job)
+        gr.switch()
+        return str(job)
+    except Exception as e:
+        logging.error(e)
+        return "Error when launching knit_job"
 
 
 @socketio.on('get_progress', namespace='/v1/knitting_socket')
