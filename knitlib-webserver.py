@@ -20,6 +20,7 @@ __author__ = "tian"
 import logging
 from flask import Flask, jsonify, request
 from flask.ext.socketio import SocketIO, emit
+from flask_cors import cross_origin
 from gevent import spawn
 
 import knitlib
@@ -42,23 +43,27 @@ def hello_world():
 
 
 @app.route('/v1/get_machine_plugins')
+@cross_origin()
 def get_machine_plugins():
     return jsonify({"active_plugins": knitlib.machine_handler.get_active_machine_plugins_names()})
 
 
 @app.route('/v1/get_ports')
+@cross_origin()
 def get_ports():
     port_dict = dict([(p[0], p[1]) for p in knitlib.machine_handler.get_available_ports()])
     return jsonify(port_dict)
 
 
 @app.route('/v1/get_job_status/<job_id>')
+@cross_origin()
 def get_job_status(job_id):
     job_d = job_dict[job_id].get_job_public_dict()
     return jsonify(job_d)
 
 
 @app.route('/v1/create_job/', methods=["POST"])
+@cross_origin()
 def create_knitting_job():
     """Creates a knitting job and inits the Machine plugin returning the job id."""
     plugin_id = request.form['plugin_id']
@@ -71,6 +76,7 @@ def create_knitting_job():
 
 
 @app.route('/v1/init_job/<job_id>', methods=["POST"])
+@cross_origin()
 def init_job(job_id):
     job = job_dict.get(job_id)
     job.init_job()
@@ -78,6 +84,7 @@ def init_job(job_id):
 
 
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
+@cross_origin()
 def configure_knitting_job(job_id):
     """Configures job based on Knitpat file."""
     knitpat_string = request.form['knitpat_dict']
@@ -89,6 +96,7 @@ def configure_knitting_job(job_id):
 
 
 @app.route('/v1/knit_job/<job_id>', methods=["POST"])
+@cross_origin()
 def knit_job(job_id):
     """Starts the knitting process for Job ID."""
     job = job_dict.get(job_id)
