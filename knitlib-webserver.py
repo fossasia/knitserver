@@ -70,7 +70,6 @@ def create_knitting_job():
     return jsonify({"job_id": job_string_id})
 
 
-# FIXME
 @app.route('/v1/init_job/<job_id>', methods=["POST"])
 def init_job(job_id):
     job = job_dict.get(job_id)
@@ -81,7 +80,8 @@ def init_job(job_id):
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
 def configure_knitting_job(job_id):
     """Configures job based on Knitpat file."""
-    knitpat_dict = request.form['knitpat_dict']
+    knitpat_string = request.form['knitpat_dict']
+    knitpat_dict = knitlib.knitpat.parse_ustring(knitpat_string)
     knitlib.knitpat.validate_dict(knitpat_dict)
     job = job_dict.get(job_id)
     job.configure_job(knitpat_dict)
