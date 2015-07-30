@@ -17,14 +17,16 @@
 #    Copyright 2015 Sebastian Oliva <http://github.com/fashiontec/knitlib>
 __author__ = "tian"
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask.ext.socketio import SocketIO, emit
+from greenlet import greenlet
 
 import knitlib
 from knitlib.knitting_job import KnittingJob
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret'
+# app.config['SECRET_KEY'] = 'secret'
+app.config.from_object('config_module.DevelopmentConfig')
 socketio = SocketIO(app)
 # A reference for creating new RESTful endpoints:
 # http://blog.luisrei.com/articles/flaskrest.html
@@ -55,10 +57,12 @@ def get_job_status(job_id):
 
 
 @app.route('/v1/create_job/', methods=["POST"])
-def create_knitting_job(plugin_id, port):
+def create_knitting_job():
     """Creates a knitting job and inits the Machine plugin returning the job id."""
+    plugin_id = request.form['plugin_id']
+    port_str = request.form['port']
     plugin_class = knitlib.machine_handler.get_machine_plugin_by_id(plugin_id)
-    job = KnittingJob(plugin_class, port)
+    job = KnittingJob(plugin_class, port_str)
     job_string_id = str(job.id)
     job_dict[job_string_id] = job
     return jsonify({"job_id": job_string_id})
@@ -74,7 +78,10 @@ def configure_knitting_job(job_id, knitpat_dict):
 @app.route('/v1/knit_job/<job_id>', methods=["POST"])
 def knit_job(job_id):
     """Starts the knitting process for Job ID."""
-    pass
+    job = job_dict.get(job_id)
+    gr = greenlet(job.knit_job)
+    gr.switch()
+    return str(job)
 
 
 @socketio.on('get_progress', namespace='/v1/knitting_socket')
@@ -89,8 +96,10 @@ def emit_message_dict():
 def emit_blocking_action_notification_dict():
     pass
 
+
 def receive_blocking_action():
     pass
+
 
 def emit_progress():
     pass
