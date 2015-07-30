@@ -17,6 +17,7 @@
 #    Copyright 2015 Sebastian Oliva <http://github.com/fashiontec/knitlib>
 __author__ = "tian"
 
+import logging
 from flask import Flask, jsonify, request
 from flask.ext.socketio import SocketIO, emit
 from greenlet import greenlet
@@ -53,7 +54,8 @@ def get_ports():
 
 @app.route('/v1/get_job_status/<job_id>')
 def get_job_status(job_id):
-    pass
+    job_d = job_dict[job_id].get_job_public_dict()
+    return jsonify(job_d)
 
 
 @app.route('/v1/create_job/', methods=["POST"])
@@ -69,10 +71,13 @@ def create_knitting_job():
 
 
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
-def configure_knitting_job(job_id, knitpat_dict):
+def configure_knitting_job(job_id):
     """Configures job based on Knitpat file."""
+    knitpat_dict = request.form['knitpat_dict']
     knitlib.knitpat.validate_dict(knitpat_dict)
-    pass
+    job = job_dict.get(job_id)
+    job.configure_job(knitpat_dict)
+    return get_job_status(job_id)
 
 
 @app.route('/v1/knit_job/<job_id>', methods=["POST"])
