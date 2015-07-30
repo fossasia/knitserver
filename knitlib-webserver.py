@@ -20,7 +20,7 @@ __author__ = "tian"
 import logging
 from flask import Flask, jsonify, request
 from flask.ext.socketio import SocketIO, emit
-from greenlet import greenlet
+from gevent import spawn
 
 import knitlib
 from knitlib.knitting_job import KnittingJob
@@ -88,18 +88,17 @@ def configure_knitting_job(job_id):
     return get_job_status(job_id)
 
 
-# FIXME
 @app.route('/v1/knit_job/<job_id>', methods=["POST"])
 def knit_job(job_id):
     """Starts the knitting process for Job ID."""
+    job = job_dict.get(job_id)
     try:
         job = job_dict.get(job_id)
-        gr = greenlet(job.knit_job)
-        gr.switch()
-        return str(job)
+        spawn(job.knit_job)
     except Exception as e:
         logging.error(e)
-        return "Error when launching knit_job"
+        return jsonify({"error": "Error on init of knitjob."})
+    return get_job_status(job_id)
 
 
 @socketio.on('get_progress', namespace='/v1/knitting_socket')
