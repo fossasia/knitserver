@@ -17,7 +17,7 @@
 #    Copyright 2015 Sebastian Oliva <http://github.com/fashiontec/knitlib>
 __author__ = "tian"
 
-import logging
+import time
 from flask import Flask, jsonify, request
 from flask.ext.socketio import SocketIO, emit
 from flask_cors import cross_origin
@@ -35,6 +35,17 @@ socketio = SocketIO(app)
 
 
 job_dict = {}
+
+
+# if not app.debug:
+import logging
+from logging.handlers import RotatingFileHandler
+file_handler = RotatingFileHandler('tmp/knitlib-webserver.log', 'a', 1 * 1024 * 1024, 10)
+file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+app.logger.setLevel(logging.INFO)
+file_handler.setLevel(logging.INFO)
+app.logger.addHandler(file_handler)
+app.logger.info('knitlib-webserver')
 
 
 @app.route('/')
@@ -69,7 +80,11 @@ def create_knitting_job():
     plugin_id = request.form['plugin_id']
     port_str = request.form['port']
     plugin_class = knitlib.machine_handler.get_machine_plugin_by_id(plugin_id)
-    job = KnittingJob(plugin_class, port_str)
+    job = KnittingJob(plugin_class, port_str, callbacks_dict={
+        "blocking_user_action": emit_blocking_action_notification_dict,
+        "progress": emit_progress,
+        "message": emit_message_dict
+    })
     job_string_id = str(job.id)
     job_dict[job_string_id] = job
     return jsonify({"job_id": job_string_id})
@@ -101,7 +116,6 @@ def knit_job(job_id):
     """Starts the knitting process for Job ID."""
     job = job_dict.get(job_id)
     try:
-        job = job_dict.get(job_id)
         spawn(job.knit_job)
     except Exception as e:
         logging.error(e)
@@ -109,25 +123,26 @@ def knit_job(job_id):
     return get_job_status(job_id)
 
 
-@socketio.on('get_progress', namespace='/v1/knitting_socket')
-def emit_progress(message):
-    emit('progress', {'data': message['data']})
+def emit_message_dict(msg, level):
+    emit('emit_message_dict', msg)
+    logging.log("Emited emit_message_dict: {}".format(msg))
 
 
-def emit_message_dict():
+def emit_progress(percent, done, total):
+    emit("progress", {"percent": percent, "done": done, "total": total})
+    logging.info("log info {0}, {1}, {2}".format(percent, done, total))
+
+
+def emit_blocking_action_notification_dict(msg, level):
+    logging.log("Blocking Action: {}".format(msg))
+    time.sleep(10)
     pass
 
 
-def emit_blocking_action_notification_dict():
-    pass
-
-
+@socketio.on('message_blocking_action')
 def receive_blocking_action():
     pass
 
-
-def emit_progress():
-    pass
 
 if __name__ == '__main__':
     # app.run(debug=True)
