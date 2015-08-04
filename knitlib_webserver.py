@@ -22,6 +22,7 @@ from flask import Flask, jsonify, request
 from flask.ext.socketio import SocketIO, emit
 from flask_cors import cross_origin
 from gevent import spawn
+from threading import Thread
 
 import knitlib
 from knitlib.knitting_job import KnittingJob
@@ -35,6 +36,9 @@ socketio = SocketIO(app)
 
 
 job_dict = {}
+msg_queue = []
+progress = None
+thread = None
 
 
 # if not app.debug:
@@ -50,6 +54,10 @@ app.logger.info('knitlib-webserver')
 
 @app.route('/')
 def hello_world():
+    global thread
+    if thread is None:
+        thread = Thread(target=__emit_socket)
+        thread.start()
     return 'Hello World!'
 
 
@@ -122,26 +130,40 @@ def knit_job(job_id):
         return jsonify({"error": "Error on init of knitjob."})
     return get_job_status(job_id)
 
+def __emit_socket():
+    break_emission = False
+    while not break_emission:
+        time.sleep(1)
+        if len(msg_queue) >= 1:
+            ms = msg_queue.pop()
+            emit(ms["type"], ms["data"], namespace="/knit")
+            logging.log("Emmited from queue: {}".format(ms))
+
 
 def emit_message_dict(msg, level):
-    emit('emit_message_dict', msg)
-    logging.log("Emited emit_message_dict: {}".format(msg))
+    # emit('emit_message_dict', msg)
+    msg_queue.append({"type": "emit_message_dict", "data": msg})
+    logging.log("Queued emit_message_dict: {}".format(msg))
 
 
 def emit_progress(percent, done, total):
-    emit("progress", {"percent": percent, "done": done, "total": total})
+    # emit("progress", {"percent": percent, "done": done, "total": total}, namespace="/knit")
+    msg_queue.append({"type": "progress", "data": {"percent": percent, "done": done, "total": total}})
     logging.info("log info {0}, {1}, {2}".format(percent, done, total))
 
 
-def emit_blocking_action_notification_dict(msg, level):
+def emit_blocking_action_notification_dict(msg, level, namespace="/knit"):
+    #TODO: implement block and lock
     logging.log("Blocking Action: {}".format(msg))
     time.sleep(10)
     pass
 
 
 @socketio.on('message_blocking_action')
-def receive_blocking_action():
+def receive_blocking_action(msg, level):
+    logging.log("asdf")
     pass
+
 
 
 if __name__ == '__main__':
