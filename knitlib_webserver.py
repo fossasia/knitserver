@@ -22,6 +22,7 @@ from flask import Flask, jsonify, request
 from flask_sockets import Sockets
 from flask_cors import cross_origin
 from gevent import spawn
+from threading import Thread
 
 import knitlib
 from knitlib.knitting_job import KnittingJob
@@ -35,6 +36,9 @@ sockets = Sockets(app)
 
 
 job_dict = {}
+msg_queue = []
+progress = None
+thread = None
 
 
 # if not app.debug:
@@ -50,6 +54,10 @@ app.logger.info('knitlib-webserver')
 
 @app.route('/')
 def hello_world():
+    global thread
+    if thread is None:
+        thread = Thread(target=__emit_socket)
+        thread.start()
     return 'Hello World!'
 
 
@@ -123,6 +131,17 @@ def knit_job(job_id):
     return get_job_status(job_id)
 
 
+@sockets.route('/v1/knitting_socket')
+def __emit_socket(ws):
+    break_emission = False
+    while not break_emission:
+        time.sleep(1)
+        if len(msg_queue) >= 1:
+            ms = msg_queue.pop()
+            ws.send(ms["type"], ms["data"])
+            logging.log("Emmited from queue: {}".format(ms))
+
+
 @sockets.route('/echo')
 def echo_socket(ws):
     while True:
@@ -130,12 +149,14 @@ def echo_socket(ws):
         ws.send(message)
 
 def emit_message_dict(msg, level):
-    emit('emit_message_dict', msg)
-    logging.log("Emited emit_message_dict: {}".format(msg))
+    # emit('emit_message_dict', msg)
+    msg_queue.append({"type": "emit_message_dict", "data": msg})
+    logging.log("Queued emit_message_dict: {}".format(msg))
 
 
 def emit_progress(percent, done, total):
-    emit("progress", {"percent": percent, "done": done, "total": total})
+    # emit("progress", {"percent": percent, "done": done, "total": total}, namespace="/knit")
+    msg_queue.append({"type": "progress", "data": {"percent": percent, "done": done, "total": total}})
     logging.info("log info {0}, {1}, {2}".format(percent, done, total))
 
 
