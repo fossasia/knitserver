@@ -19,7 +19,7 @@ __author__ = "tian"
 
 import time
 from flask import Flask, jsonify, request
-from flask.ext.socketio import SocketIO, emit
+from flask_sockets import Sockets
 from flask_cors import cross_origin
 from gevent import spawn
 
@@ -29,7 +29,7 @@ from knitlib.knitting_job import KnittingJob
 app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'secret'
 app.config.from_object('config_module.DevelopmentConfig')
-socketio = SocketIO(app)
+sockets = Sockets(app)
 # A reference for creating new RESTful endpoints:
 # http://blog.luisrei.com/articles/flaskrest.html
 
@@ -123,6 +123,12 @@ def knit_job(job_id):
     return get_job_status(job_id)
 
 
+@sockets.route('/echo')
+def echo_socket(ws):
+    while True:
+        message = ws.receive()
+        ws.send(message)
+
 def emit_message_dict(msg, level):
     emit('emit_message_dict', msg)
     logging.log("Emited emit_message_dict: {}".format(msg))
@@ -136,11 +142,6 @@ def emit_progress(percent, done, total):
 def emit_blocking_action_notification_dict(msg, level):
     logging.log("Blocking Action: {}".format(msg))
     time.sleep(10)
-    pass
-
-
-@socketio.on('message_blocking_action')
-def receive_blocking_action():
     pass
 
 
