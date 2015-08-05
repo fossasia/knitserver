@@ -1,4 +1,4 @@
 Flask
-Flask-SocketIO
 flask-cors
 knitlib
+Flask-Sockets
