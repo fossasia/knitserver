@@ -136,7 +136,12 @@ def __emit_socket(ws):
     break_emission = False
     while not break_emission:
         time.sleep(1)
+        message = ws.receive()
+        if message:
+            logging.error("message recieved")
+
         if len(msg_queue) >= 1:
+            message = ws.receive()
             ms = msg_queue.pop()
             ws.send(ms["type"], ms["data"])
             logging.log("Emmited from queue: {}".format(ms))
@@ -169,4 +174,4 @@ def emit_blocking_action_notification_dict(msg, level):
 if __name__ == '__main__':
     # app.run(debug=True)
     app.debug = False
-    socketio.run(app)
+    app.run()
