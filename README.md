@@ -4,7 +4,7 @@ Knitlib Web server is a Knitlib client that provides REST API endpoints for Knit
 Knitlib Webserver is designed to interact with [Knitweb](https://github.com/fashiontec/knitweb)
 
 ## Requirements
-Knitlib Web requires the Knitlib library to be installed and Flask as main dependencies. 
+Knitlib Web requires the Knitlib library to be installed and Flask as main dependencies. Check requirements.txt for more.
 
 ## Functionality
 
