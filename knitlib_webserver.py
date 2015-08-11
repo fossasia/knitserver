@@ -19,7 +19,7 @@ __author__ = "tian"
 
 import time
 from flask import Flask, jsonify, request
-from flask_sockets import Sockets
+from flask_sockets import Sockets, Worker
 from flask_cors import cross_origin
 from gevent import spawn, sleep
 from threading import Thread
@@ -174,7 +174,8 @@ def emit_blocking_action_notification_dict(msg, level):
     pass
 
 
-if __name__ == '__main__':
-    # app.run(debug=True)
-    app.debug = False
-    app.run()
+if __name__ == "__main__":
+    from gevent import pywsgi
+    from geventwebsocket.handler import WebSocketHandler
+    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    server.serve_forever()
