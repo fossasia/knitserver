@@ -54,10 +54,6 @@ app.logger.info('knitlib-webserver')
 
 @app.route('/')
 def hello_world():
-    global thread
-    if thread is None:
-        thread = Thread(target=__emit_socket)
-        thread.start()
     return 'Hello World!'
 
 
