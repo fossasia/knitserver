@@ -128,19 +128,20 @@ def knit_job(job_id):
 
 
 @sockets.route('/v1/knitting_socket')
-def __emit_socket(ws):
+def emit_socket(ws):
     break_emission = False
     while not break_emission:
         sleep(0.5)
         message = ws.receive()
         if message:
-            logging.error("message recieved")
+            logging.info("message recieved")
+            logging.info(message)
 
         if len(msg_queue) >= 1:
             message = ws.receive()
             ms = msg_queue.pop()
             ws.send(ms["type"], ms["data"])
-            logging.log("Emmited from queue: {}".format(ms))
+            logging.info("Emmited from queue: {}".format(ms))
 
 
 @sockets.route('/echo')
