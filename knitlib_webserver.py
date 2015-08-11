@@ -21,7 +21,7 @@ import time
 from flask import Flask, jsonify, request
 from flask_sockets import Sockets
 from flask_cors import cross_origin
-from gevent import spawn
+from gevent import spawn, sleep
 from threading import Thread
 
 import knitlib
@@ -135,7 +135,7 @@ def knit_job(job_id):
 def __emit_socket(ws):
     break_emission = False
     while not break_emission:
-        time.sleep(1)
+        sleep(0.5)
         message = ws.receive()
         if message:
             logging.error("message recieved")
