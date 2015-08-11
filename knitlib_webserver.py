@@ -60,7 +60,33 @@ def hello_world():
 @app.route("/test_operation"):
 def socket_test_page():
     #TODO: simple page to test REST and Sockets operation.
-    return 404
+    return \
+'''
+<html>
+
+    <head>
+        <title>Test</title>
+
+        <script type="text/javascript">
+            var ws = new WebSocket("ws://" + location.host + "/echo");
+            ws.onmessage = function(evt){
+                    var received_msg = evt.data;
+                    console.log(received_msg);
+            };
+
+            ws.onopen = function(){
+                ws.send("hello john");
+            };
+        </script>
+
+    </head>
+
+    <body>
+        <p>hello world</p>
+    </body>
+
+</html>
+'''
 
 
 @app.route('/v1/get_machine_plugins')
