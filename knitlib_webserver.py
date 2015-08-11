@@ -57,6 +57,12 @@ def hello_world():
     return 'Hello World!'
 
 
+@app.route("/test_operation"):
+def socket_test_page():
+    #TODO: simple page to test REST and Sockets operation.
+    return 404
+
+
 @app.route('/v1/get_machine_plugins')
 @cross_origin()
 def get_machine_plugins():
