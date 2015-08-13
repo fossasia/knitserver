@@ -18,6 +18,8 @@
 __author__ = "tian"
 
 import time
+import os
+from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request
 from flask_sockets import Sockets, Worker
 from flask_cors import cross_origin
@@ -57,7 +59,7 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route("/test_operation"):
+@app.route("/test_operation")
 def socket_test_page():
     #TODO: simple page to test REST and Sockets operation.
     return \
@@ -137,8 +139,14 @@ def init_job(job_id):
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
 @cross_origin()
 def configure_knitting_job(job_id):
-    """Configures job based on Knitpat file."""
+    """Configures job based on Knitpat file and binary Image."""
     knitpat_string = request.form['knitpat_dict']
+    file = request.files['file']
+    if file:
+        filename = secure_filename(file.filename)
+        filename_path = os.path.join(app.config['UPLOAD_FOLDER'])
+        file.save(filename_path, filename)
+
     knitpat_dict = knitlib.knitpat.parse_ustring(knitpat_string)
     knitlib.knitpat.validate_dict(knitpat_dict)
     job = job_dict.get(job_id)
