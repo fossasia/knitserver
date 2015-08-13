@@ -31,7 +31,11 @@ from knitlib.knitting_job import KnittingJob
 
 app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'secret'
+UPLOAD_FOLDER = '/tmp/knitlib_web_uploads/'
 app.config.from_object('config_module.DevelopmentConfig')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
 sockets = Sockets(app)
 # A reference for creating new RESTful endpoints:
 # http://blog.luisrei.com/articles/flaskrest.html
@@ -141,11 +145,12 @@ def init_job(job_id):
 def configure_knitting_job(job_id):
     """Configures job based on Knitpat file and binary Image."""
     knitpat_string = request.form['knitpat_dict']
-    file = request.files['file']
-    if file:
-        filename = secure_filename(file.filename)
-        filename_path = os.path.join(app.config['UPLOAD_FOLDER'])
-        file.save(filename_path, filename)
+    if request.files and 'file' in request.files:
+        file = request.files['file']
+        if file.filename is not '':
+            filename = secure_filename(file.filename)
+            filename_path = os.path.join(app.config['UPLOAD_FOLDER'])
+            file.save(filename_path, filename)
 
     knitpat_dict = knitlib.knitpat.parse_ustring(knitpat_string)
     knitlib.knitpat.validate_dict(knitpat_dict)
