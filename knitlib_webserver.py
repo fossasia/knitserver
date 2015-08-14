@@ -20,7 +20,7 @@ __author__ = "tian"
 import time
 import os
 from werkzeug.utils import secure_filename
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_sockets import Sockets, Worker
 from flask_cors import cross_origin
 from gevent import spawn, sleep
@@ -66,107 +66,7 @@ def hello_world():
 @app.route("/test_operation")
 def socket_test_page():
     #TODO: simple page to test REST and Sockets operation.
-    return \
-'''
-<html>
-
-    <head>
-        <title>Test</title>
-
-        <script type="text/javascript">
-            var ws = new WebSocket("ws://" + location.host + "/echo");
-            ws.onmessage = function(evt){
-                    var received_msg = evt.data;
-                    console.log(received_msg);
-            };
-
-            ws.onopen = function(){
-                ws.send("hello");
-            };
-
-            var create_knitjob = function () {
-              knitjob_id = ""
-              $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "//"+location.host + "/v1/create_job/",
-                data: {
-                  "plugin_id": "dummy",
-                  "port": "/dev/null"
-                },
-                success: function(data){
-                  console.log("Created knitting job:")
-                  console.log(data);
-                  knitjob_id = data["job_id"];
-                }
-              });
-              return knitjob_id;
-            };
-
-            var init_knitjob = function (job_id) {
-              $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "//"+location.host + "/v1/init_job/" + job_id,
-                data: {
-                  /* No data should be needed for job init. */
-                },
-                success: function(data){
-                  console.log("Inited knitting job:")
-                  console.log(data);
-                }
-              });
-            };
-
-            var config_knitjob = function (job_id) {
-              /**
-              var fd = new FormData();
-              fd.append("knitpat_dict", {"colors": 2, "file_url":"embedded" });
-              */
-              $.ajax({
-                type: "POST",
-                dataType: "json",
-                // contentType: false,
-                contentType: "multipart/form-data",
-                url: "//"+location.host + "/v1/configure_job/" + job_id,
-                data: {
-                  "knitpat_dict": {"colors": 2, "file_url":"embedded" }
-                  // TODO: add image data
-                  // "file": new Blob()
-                },
-                success: function(data){
-                  console.log("Configured knitting job:")
-                  console.log(data);
-                }
-              });
-            };
-
-            var knit_knitjob = function (job_id) {
-              $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "//"+location.host + "/v1/knit_job/" + job_id,
-                data: {
-                  /* No data should be needed */
-                },
-                success: function(data){
-                  console.log("Knitting knitting job:")
-                  console.log(data);
-                }
-              });
-            };
-        </script>
-
-    </head>
-
-    <body>
-        <p>Check out the console to test operation.</p>
-
-        <script src="//code.jquery.com/jquery-1.11.3.js"></script>
-    </body>
-
-</html>
-'''
+    return render_template("demo_operation_template.html")
 
 
 @app.route('/v1/get_machine_plugins')
