@@ -119,12 +119,13 @@ def init_job(job_id):
 def configure_knitting_job(job_id):
     """Configures job based on Knitpat file and binary Image."""
     knitpat_string = request.form['knitpat_dict']
-    if request.files and 'file' in request.files:
-        file = request.files['file']
-        if file.filename is not '':
-            filename = secure_filename(file.filename)
-            filename_path = os.path.join(app.config['UPLOAD_FOLDER'])
-            file.save(filename_path, filename)
+    # files = request.files
+    # if files and 'file' in files:
+    #    file = request.files['file']
+    #    if file.filename is not '':
+    #        filename = secure_filename(file.filename)
+    #        filename_path = os.path.join(app.config['UPLOAD_FOLDER'])
+    #        file.save(filename_path, filename)
 
     knitpat_dict = knitlib.knitpat.parse_ustring(knitpat_string)
     knitlib.knitpat.validate_dict(knitpat_dict)
