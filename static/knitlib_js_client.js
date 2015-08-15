@@ -1,7 +1,7 @@
 /**
  * Created by tian on 8/14/15.
  */
-var ws = new WebSocket("ws://" + location.host + "/echo");
+var ws = new WebSocket("ws://" + location.host + "/v1/knitting_socket");
 ws.onmessage = function(evt){
         var received_msg = evt.data;
         console.log(received_msg);
