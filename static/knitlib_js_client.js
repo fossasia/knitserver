@@ -83,3 +83,24 @@ var knit_knitjob = function (job_id) {
     }
   });
 };
+
+
+var get_status = function (job_id) {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    url: "//"+location.host + "/v1/get_job_status/" + job_id,
+    data: {
+      /* No data should be needed for job init. */
+    },
+    success: function(data){
+      console.log("Status of Job job:")
+      console.log(data);
+    }
+  });
+};
+
+// create_knitjob();
+// init_knitjob(knitjob_id)
+// config_knitjob(knitjob_id)
+// knit_knitjob(knitjob_id)
