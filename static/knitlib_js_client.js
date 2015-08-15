@@ -46,21 +46,22 @@ var init_knitjob = function (job_id) {
 };
 
 var config_knitjob = function (job_id) {
-  /**
-  var fd = new FormData();
-  fd.append("knitpat_dict", {"colors": 2, "file_url":"embedded" });
-  */
+  
+  //var fd = new FormData();
+  // fd.append("knitpat_dict", JSON.stringify({"colors": 2, "file_url":"embedded" }));
+  // fd.append("file", new Blob());
+  
   $.ajax({
     type: "POST",
     dataType: "json",
-    // contentType: false,
-    contentType: "multipart/form-data",
     url: "//"+location.host + "/v1/configure_job/" + job_id,
-    data: {
-      "knitpat_dict": {"colors": 2, "file_url":"embedded" }
-      // TODO: add image data
-      // "file": new Blob()
-    },
+    data: { "knitpat_dict":
+    JSON.stringify({
+      "colors": 2, 
+      "file_url":"embedded", 
+      // TODO: add generated image data
+      "image_data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP4z8CwCgAEqwGqN0e5wwAAAABJRU5ErkJggg=="
+     })},
     success: function(data){
       console.log("Configured knitting job:")
       console.log(data);
