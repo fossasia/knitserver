@@ -152,16 +152,15 @@ def emit_socket(ws):
     break_emission = False
     while not break_emission:
         sleep(0.5)
-        message = ws.receive()
-        if message:
-            logging.info("message recieved")
-            logging.info(message)
-
-        if len(msg_queue) >= 1:
-            message = ws.receive()
+        while len(msg_queue) >= 1:
             ms = msg_queue.pop()
             ws.send(ms["type"], ms["data"])
-            logging.info("Emmited from queue: {}".format(ms))
+            logging.info("Emitted from queue: {}".format(ms))
+
+        message = ws.receive()
+        if message:
+            logging.info("message received")
+            logging.info(message)
 
 
 @sockets.route('/echo')
@@ -172,7 +171,7 @@ def echo_socket(ws):
 
 def emit_message_dict(msg, level):
     # emit('emit_message_dict', msg)
-    msg_queue.append({"type": "emit_message_dict", "data": msg})
+    msg_queue.append({"type": "message", "data": msg, "level": level})
     logging.log("Queued emit_message_dict: {}".format(msg))
 
 
