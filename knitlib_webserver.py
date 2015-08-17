@@ -99,9 +99,9 @@ def create_knitting_job():
     port_str = request.form['port']
     plugin_class = knitlib.machine_handler.get_machine_plugin_by_id(plugin_id)
     job = KnittingJob(plugin_class, port_str, callbacks_dict={
-        "blocking_user_action": emit_blocking_action_notification_dict,
+        "blocking_user_action": emit_blocking_message,
         "progress": emit_progress,
-        "message": emit_message_dict
+        "message": emit_nonblocking_message
     })
     job_string_id = str(job.id)
     job_dict[job_string_id] = job
@@ -119,17 +119,11 @@ def init_job(job_id):
 @app.route('/v1/configure_job/<job_id>', methods=["POST"])
 @cross_origin()
 def configure_knitting_job(job_id):
-    """Configures job based on Knitpat file and binary Image."""
+    """Configures job based on Knitpat file and embedded Image."""
     knitpat_string = request.form['knitpat_dict']
-    # files = request.files
-    # if files and 'file' in files:
-    #    file = request.files['file']
-    #    if file.filename is not '':
-    #        filename = secure_filename(file.filename)
-    #        filename_path = os.path.join(app.config['UPLOAD_FOLDER'])
-    #        file.save(filename_path, filename)
-
     knitpat_dict = knitlib.knitpat.parse_ustring(knitpat_string)
+    # TODO: extract base64 PNG image from ['image_data'] key from knitpat dict.
+
     knitlib.knitpat.validate_dict(knitpat_dict)
     job = job_dict.get(job_id)
     job.configure_job(knitpat_dict)
@@ -150,10 +144,12 @@ def knit_job(job_id):
 
 
 @sockets.route('/v1/knitting_socket')
-def emit_socket(ws):
+def knitting_socket(ws):
+    """Handler for Knitting Socket operation."""
     break_emission = False
 
     def handle_socket_reception(ws):
+        """Greenlet loop for socket reception and processing."""
         while not break_emission:
             sleep(0.5)
             message = ws.receive()
@@ -172,8 +168,6 @@ def emit_socket(ws):
             logging.info("Emitted from queue: {}".format(ms))
 
 
-
-
 @sockets.route('/echo')
 def echo_socket(ws):
     while True:
@@ -182,21 +176,26 @@ def echo_socket(ws):
 
 
 def _process_input_ws_messages(message):
+    """Internal processor for messages from client via WS."""
     pass
 
-def emit_message_dict(msg, level):
+
+def emit_nonblocking_message(msg, level):
+    """Callback for emitting messages."""
     # emit('emit_message_dict', msg)
     msg_queue.append({"type": "message", "data": msg, "level": level})
     logging.log("Queued emit_message_dict: {}".format(msg))
 
 
 def emit_progress(percent, done, total):
+    """Callback for emitting progress."""
     # emit("progress", {"percent": percent, "done": done, "total": total}, namespace="/knit")
     msg_queue.append({"type": "progress", "data": {"percent": percent, "done": done, "total": total}})
     logging.info("log info {0}, {1}, {2}".format(percent, done, total))
 
 
-def emit_blocking_action_notification_dict(msg, level):
+def emit_blocking_message(msg, level):
+    """Callback for emitting blocking message progress."""
     logging.log("Blocking Action: {}".format(msg))
     time.sleep(10)
     pass
