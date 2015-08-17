@@ -152,19 +152,26 @@ def knit_job(job_id):
 @sockets.route('/v1/knitting_socket')
 def emit_socket(ws):
     break_emission = False
+
+    def handle_socket_reception(ws):
+        while not break_emission:
+            sleep(0.5)
+            message = ws.receive()
+            if message:
+                logging.info("message received")
+                logging.info(message)
+                # TODO: process message for blocking messages.
+                _process_input_ws_messages(message)
+
+    spawn(handle_socket_reception, ws)
     while not break_emission:
-        # sleep(0.5)
+        sleep(0.5)
         while len(msg_queue) >= 1:
-            ms = msg_queue.pop()
+            ms = msg_queue.pop(0)
             ws.send(json.dumps(ms))
             logging.info("Emitted from queue: {}".format(ms))
 
-        message = ws.receive()
-        if message:
-            logging.info("message received")
-            logging.info(message)
-            # TODO: process message for blocking messages.
-            _process_input_ws_messages(message)
+
 
 
 @sockets.route('/echo')
