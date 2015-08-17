@@ -20,6 +20,8 @@ __author__ = "tian"
 import time
 import os
 from werkzeug.utils import secure_filename
+from geventwebsocket import websocket
+import json
 from flask import Flask, jsonify, request, render_template
 from flask_sockets import Sockets, Worker
 from flask_cors import cross_origin
@@ -151,16 +153,18 @@ def knit_job(job_id):
 def emit_socket(ws):
     break_emission = False
     while not break_emission:
-        sleep(0.5)
+        # sleep(0.5)
         while len(msg_queue) >= 1:
             ms = msg_queue.pop()
-            ws.send(ms["type"], ms["data"])
+            ws.send(json.dumps(ms))
             logging.info("Emitted from queue: {}".format(ms))
 
         message = ws.receive()
         if message:
             logging.info("message received")
             logging.info(message)
+            # TODO: process message for blocking messages.
+            _process_input_ws_messages(message)
 
 
 @sockets.route('/echo')
@@ -168,6 +172,10 @@ def echo_socket(ws):
     while True:
         message = ws.receive()
         ws.send(message)
+
+
+def _process_input_ws_messages(message):
+    pass
 
 def emit_message_dict(msg, level):
     # emit('emit_message_dict', msg)
