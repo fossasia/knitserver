@@ -22,7 +22,7 @@ import os
 from werkzeug.utils import secure_filename
 from geventwebsocket import websocket
 import json
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, abort
 from flask_sockets import Sockets, Worker
 from flask_cors import cross_origin
 from gevent import spawn, sleep
@@ -75,6 +75,17 @@ def socket_test_page():
 @cross_origin()
 def get_machine_plugins():
     return jsonify({"active_plugins": knitlib.machine_handler.get_active_machine_plugins_names()})
+
+
+@app.route("/v1/plugin/<machine_id>/supported_features")
+@cross_origin()
+def get_machine_plugin_supported_features(machine_id):
+    machine = knitlib.machine_handler.get_machine_plugin_by_id(machine_id, None)
+    if machine:
+        features = machine.supported_config_features()
+        return jsonify(features)
+    else:
+        abort(404)
 
 
 @app.route('/v1/get_ports')
