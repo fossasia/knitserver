@@ -11,26 +11,20 @@ ws.onopen = function(){
     ws.send("hello");
 };
 
-var create_knitjob = function () {
-  knitjob_id = ""
+var create_knitjob = function (plugin_id, port, success_function) {
   $.ajax({
     type: "POST",
     dataType: "json",
     url: "//"+location.host + "/v1/create_job/",
     data: {
-      "plugin_id": "dummy",
-      "port": "/dev/null"
+      "plugin_id": plugin_id,
+      "port": port
     },
-    success: function(data){
-      console.log("Created knitting job:")
-      console.log(data);
-      knitjob_id = data["job_id"];
-    }
+    success: success_function
   });
-  return knitjob_id;
 };
 
-var init_knitjob = function (job_id) {
+var init_knitjob = function (job_id, success_function) {
   $.ajax({
     type: "POST",
     dataType: "json",
@@ -38,14 +32,11 @@ var init_knitjob = function (job_id) {
     data: {
       /* No data should be needed for job init. */
     },
-    success: function(data){
-      console.log("Inited knitting job:")
-      console.log(data);
-    }
+    success: success_function
   });
 };
 
-var config_knitjob = function (job_id) {
+var config_knitjob = function (job_id, success_function) {
   
   //var fd = new FormData();
   // fd.append("knitpat_dict", JSON.stringify({"colors": 2, "file_url":"embedded" }));
@@ -62,14 +53,11 @@ var config_knitjob = function (job_id) {
       // TODO: add generated image data
       "image_data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP4z8CwCgAEqwGqN0e5wwAAAABJRU5ErkJggg=="
      })},
-    success: function(data){
-      console.log("Configured knitting job:")
-      console.log(data);
-    }
+    success: success_function
   });
 };
 
-var knit_knitjob = function (job_id) {
+var knit_knitjob = function (job_id, success_function) {
   $.ajax({
     type: "POST",
     dataType: "json",
@@ -77,15 +65,12 @@ var knit_knitjob = function (job_id) {
     data: {
       /* No data should be needed */
     },
-    success: function(data){
-      console.log("Knitting knitting job:")
-      console.log(data);
-    }
+    success: success_function
   });
 };
 
 
-var get_status = function (job_id) {
+var get_status = function (job_id, success_function) {
   $.ajax({
     type: "GET",
     dataType: "json",
@@ -93,10 +78,7 @@ var get_status = function (job_id) {
     data: {
       /* No data should be needed for job init. */
     },
-    success: function(data){
-      console.log("Status of Job job:")
-      console.log(data);
-    }
+    success: success_function
   });
 };
 
