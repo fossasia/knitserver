@@ -98,6 +98,11 @@ var knit_knitjob = function (job_id, success_function) {
 };
 
 
+/**
+ * Returns the status of the job machine id.
+ * @param job_id
+ * @param success_function
+ */
 var get_status = function (job_id, success_function) {
     $.ajax({
         type: "GET",
