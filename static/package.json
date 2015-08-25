@@ -6,6 +6,7 @@
   "scripts": {
     "test": "test_knitlib_js_client.js"
   },
+  "dependencies": ["jquery"],
   "keywords": [
     "knitting",
     "knitlib",
