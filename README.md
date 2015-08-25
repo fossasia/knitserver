@@ -12,3 +12,6 @@ Knitlib Web requires the Knitlib library to be installed and Flask as main depen
 ## 3. Knitlib Server API
 Knitlib Web also provides API implementation of Knitlib's async callbacks via Web Sockets in order to handle communication from Knitting Machines to User Facing apps, allowing real time notification of critical errors, warnings, informational messages or blocking operations (e.g. set needle positions, ensure carriage is ready, etc)
 * Sample Api Calls and Messages
+
+## 4. Using Knitlib Server with a Web Interface
+Please refer to https://github.com/fashiontec/knitweb
