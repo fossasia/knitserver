@@ -170,13 +170,17 @@ def knitting_socket(ws):
                 # TODO: process message for blocking messages.
                 _process_input_ws_messages(message)
 
+    def handle_socket_emission(ws):
+        while not break_emission:
+            sleep(0.5)
+            while len(msg_queue) >= 1:
+                ms = msg_queue.pop(0)
+                ws.send(json.dumps(ms))
+                logging.info("Emitted from queue: {}".format(ms))
+
     spawn(handle_socket_reception, ws)
-    while not break_emission:
-        sleep(0.5)
-        while len(msg_queue) >= 1:
-            ms = msg_queue.pop(0)
-            ws.send(json.dumps(ms))
-            logging.info("Emitted from queue: {}".format(ms))
+    spawn(handle_socket_emission, ws)
+
 
 
 @sockets.route('/echo')
