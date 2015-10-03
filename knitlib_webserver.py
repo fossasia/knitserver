@@ -182,6 +182,12 @@ def knitting_socket(ws):
     spawn(handle_socket_emission, ws)
 
 
+@app.route('/v1/knitserver_info')
+@cross_origin()
+def knitserver_info():
+    # TODO: add more knitserver info.
+    return jsonify({"knitlib_version": knitlib.__version__})
+
 
 @sockets.route('/echo')
 def echo_socket(ws):
