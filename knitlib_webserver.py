@@ -231,7 +231,8 @@ def emit_progress(percent, done, total):
 
 def emit_blocking_message(msg, level):
     """Callback for emitting blocking message progress."""
-    logging.log("Blocking Action: {}".format(msg))
+    logging.info("Blocking Action: {}".format(msg))
+    msg_queue.append({"type": "message", "data": msg, "level": level})
     time.sleep(10)
     pass
 
