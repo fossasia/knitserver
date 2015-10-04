@@ -66,7 +66,7 @@ var init_knitjob = function (job_id, success_function) {
  * @param success_function A callback function on call success.
  * @param knitpat_dict_string A String version of a Knitpat config file. Must have image_data base64 embedded.
  */
-var config_knitjob = function (job_id, success_function, knitpat_dict_string) {
+var config_knitjob = function (job_id, knitpat_dict_string, success_function) {
     //var fd = new FormData();
     // fd.append("knitpat_dict", JSON.stringify({"colors": 2, "file_url":"embedded" }));
     // fd.append("file", new Blob());
@@ -116,6 +116,8 @@ var get_status = function (job_id, success_function) {
 };
 
 // create_knitjob();
+// create_knitjob("dummy", "/dev/null", console.log)
 // init_knitjob(knitjob_id)
 // config_knitjob(knitjob_id)
+// config_knitjob("5485de4d-c319-4e13-9072-1cc0109ed74e", '{"colors": 2, "file_url": "embedded", "image_data": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAAAUCAYAAAAKlDZOAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QwJFSIRDWMAkwAAAVhJREFUaN7tWtEOwyAIFLP//2X2sJmYlikU1NrdJYYuVbhcEW0npZQ4AcAiZOZP/sHCrrDfa2ZY2BWWuE5FAJi9BEMCHYio+RsISsAi7NFGP8go/6P5tmLNiHF3fbz+TwnIzImITtZaIX71kfx7MJLv7HG76RPBN7dIazJbuzRJ/npktbNqBN9yr7Qj1xKzNO/SvZs+UXxVLyH1AKm7934rZi2edWwEn2NfqYpYfeyuTyRfcwLWQaWH0+pjIXws857lzsJXm4RR43bTJ5ovMTNb9jXeGaP135rho/murIA76BPJ1/QZ5heZ+uu2RO7KRlrac3l9aPn2KthpFnd8PE2fSL4v72t4hBA93yN8avi2kky79D1Znwi+eRTxu+Mq39njdtPHiixlZ90iyUTGmMF3RsXZWZ+IGPgr7gZL0z8DhxGApcj1BhsWdoXFuTTYdecBE47kAwvxBqnHFSBM3N80AAAAAElFTkSuQmCC" }')
 // knit_knitjob(knitjob_id)
