@@ -18,6 +18,10 @@
 __author__ = "tian"
 
 import time
+from tempfile import NamedTemporaryFile
+import shutil
+from six.moves import cStringIO
+import re
 import os
 from werkzeug.utils import secure_filename
 from geventwebsocket import websocket
@@ -133,9 +137,19 @@ def configure_knitting_job(job_id):
     """Configures job based on Knitpat file and embedded Image."""
     knitpat_string = request.form['knitpat_dict']
     knitpat_dict = knitlib.knitpat.parse_ustring(knitpat_string)
-    # TODO: extract base64 PNG image from ['image_data'] key from knitpat dict.
-
     knitlib.knitpat.validate_dict(knitpat_dict)
+
+    if "embed" in knitpat_dict.get("file_url"):
+        image_data_string = knitpat_dict.get("image_data")
+        image_data_obj = cStringIO(re.sub('^data:image/.+;base64,', '', image_data_string).decode('base64'))
+        temp_file_obj = NamedTemporaryFile(mode='w+b', suffix='.png', delete=False)
+        shutil.copyfileobj(image_data_obj, temp_file_obj)
+        temp_file_obj.flush()
+        # os.fsync(temp_file_obj)
+        # pil_img = Image.open(cStringIO(image_data), "r")
+        knitpat_dict["old_file_url"] = knitpat_dict.get("file_url")
+        knitpat_dict["file_url"] = temp_file_obj.name
+
     job = job_dict.get(job_id)
     job.configure_job(knitpat_dict)
     return get_job_status(job_id)
