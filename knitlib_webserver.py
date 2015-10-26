@@ -22,6 +22,7 @@ from tempfile import NamedTemporaryFile
 import shutil
 from six.moves import cStringIO
 import re
+import uuid
 import os
 from werkzeug.utils import secure_filename
 from geventwebsocket import websocket
@@ -229,10 +230,15 @@ def emit_progress(percent, done, total):
     logging.info("log info {0}, {1}, {2}".format(percent, done, total))
 
 
+blocking_queue = []
+
 def emit_blocking_message(msg, level):
     """Callback for emitting blocking message progress."""
+    msg_id = uuid.uuid4()
     logging.info("Blocking Action: {}".format(msg))
-    msg_queue.append({"type": "message", "data": msg, "level": level})
+    msg_queue.append({"type": "message", "data": msg, "level": level, "msg_id": unicode(msg_id)})
+    blocking_queue.append(unicode(msg_id))
+    # TODO: block and locks.
     time.sleep(10)
     pass
 
