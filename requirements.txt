@@ -1,4 +1,4 @@
 Flask
 flask-cors
-knitlib
+git+https://github.com/fossasia/knitlib.git
 Flask-Sockets
