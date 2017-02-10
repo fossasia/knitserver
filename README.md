@@ -11,8 +11,9 @@ Knitlib Web requires the Knitlib library to be installed and Flask as main depen
 Currently there is not a packaged version of Knitserver, however it is quite easy to get up and running.
 
 1. Download the Source Code (either git clone this repository or download a zip or tar).
-2. Browse the repo (and optional, setup a virtual enviroment: virtualenv venv/ )
-3. Install the dependencies from requirements.txt ( pip install -r requirements.txt )/ if you are using proxy use sudo pip install --proxy="http://Your Proxy:port" -r requirements.txt
+2. Browse the repo (and optional, setup a virtual enviroment: virtualenv venv )
+3. Install the dependencies from requirements.txt ( pip install -r requirements.txt )/if you are using any proxy run: sudo pip install --proxy="http://Your proxy:port" -r requirements.txt
+
 4. Run the server: python knitlib_webserver.py or run.sh
 
 ## 3. Knit Server API
