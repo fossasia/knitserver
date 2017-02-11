@@ -28,7 +28,7 @@ from werkzeug.utils import secure_filename
 from geventwebsocket import websocket
 import json
 from flask import Flask, jsonify, request, render_template, abort
-from flask_sockets import Sockets, Worker
+from flask_sockets import Sockets
 from flask_cors import cross_origin
 from gevent import spawn, sleep
 from threading import Thread
